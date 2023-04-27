@@ -1,8 +1,8 @@
 <?php
+	session_start();
 	include("../libraries/php-func/main-func.php");
 	include("../libraries/php-func/connection.php");
 	head("Admin Login","");
-	session_start();
 	if(!empty($_SESSION["admin_id"]) && !empty($_SESSION["username"])){
 		?>
 		<script>window.location.assign("dashboard.php");</script>
