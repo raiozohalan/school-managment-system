@@ -1,0 +1,39 @@
+<?php
+	include("connection.php");
+	if(!empty($_GET["class_id"])){
+		$search = "";
+		if(!empty($_GET["search"])){
+			$search = "where tbl_subjects.subject_title like'".$_GET["search"]."%'";
+		}
+		$query = $con->query("select tbl_subjects.tbl_id as subj_id,tbl_subjects.subject_code,tbl_subjects.subject_title,tbl_faculty.fname,tbl_faculty.mname,tbl_faculty.lname from tbl_subjects left join tbl_faculty on tbl_subjects.faculty_id = tbl_faculty.tbl_id $search order by tbl_subjects.subject_title ASC");
+		$total = 0;
+			while($row = $query->fetch()){
+				$query_class = $con->query("select * from tbl_class_subjects where subj_id='".$row["subj_id"]."' and class_id='".$_GET["class_id"]."'");
+				$rowC = $query_class->rowCount();
+				if($rowC == 0){
+					$total++;
+				?> 
+					<tr id="subjecRow<?=$row["subj_id"];?>" class="w3-hover-grey w3-animate-fade w3-text-black">
+						<td><?=$row["subject_title"];?> (<?=$row["subject_code"];?>)</td> 
+						<td><?=ucfirst($row["lname"]).", ".ucfirst($row["fname"])." ".ucfirst($row["mname"]).".";?></td>
+						<td><button type="button" class="w3-btn w3-padding-small w3-green" onclick="loadContent('classSubjects','../libraries/php-func/add-subject-to-class.php?subject_id=<?=$row["subj_id"];?>&class_id=<?=$_GET["class_id"];?>');$('#subjecRow<?=$row["subj_id"];?>').hide();"><b class="fa fa-plus w3-xlarge"></b></button></td>
+					</tr> 
+				<?php
+				}
+			}
+		
+		if($total == 0){
+			?>
+			<tr>
+			<td colspan="3" class="w3-center w3-text-black">Empty Data</td>
+			</tr>
+			<?php
+		}
+	}else{
+		?> 
+			<tr>
+			<td colspan="3" class="w3-center w3-text-black">Empty Class ID</td>
+			</tr> 
+		<?php
+	}
+?>
